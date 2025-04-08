@@ -1,47 +1,37 @@
 # cryptography-assignment
 APT3090 Cryptography class group project
 
-# Bob receiving public key
-import socket
+# RSA Encryption over TCP in Java
 
-def bob_encrypt(plaintext, public_key):
-    """Encrypts a plaintext message using RSA."""
-    e, n = public_key
-    ciphertext = pow(plaintext, e, n)
-    return ciphertext
+This project implements the **RSA public-key encryption algorithm** and demonstrates secure communication between two entities, **Alice** and **Bob**, using **Java TCP sockets**. Alice generates a public-private key pair and shares the public key with Bob. Bob uses this key to encrypt a message and sends it back to Alice for decryption.
 
-def bob_server():
-    """Implements Bob's server role."""
-    host = '127.0.0.1'  # Localhost
-    port = 65432        # Port to listen on (non-privileged ports are > 1023)
+## Features
 
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((host, port))
-        s.listen()
-        print(f"Bob listening on {host}:{port}")
-        conn, addr = s.accept()
-        with conn:
-            print(f"Connected by {addr}")
-            # Receive public key from Alice
-            public_key_data = conn.recv(1024)
-            public_key_str = public_key_data.decode()
-            e_str, n_str = public_key_str.split(',')
-            public_key = (int(e_str), int(n_str))
-            print(f"Received public key: {public_key}")
+- RSA key pair generation with 1024-bit key size
+- Secure random prime generation using `SecureRandom`
+- Public and private key creation
+- Java socket programming with TCP
+- Bidirectional communication:
+  - Alice sends the public key to Bob
+  - Bob sends the encrypted message to Alice
 
-            # Get plaintext input from user
-            plaintext_str = input("Enter plaintext message: ")
-            try:
-                plaintext = int.from_bytes(plaintext_str.encode(), 'big') #encode the string to bytes, then convert to integer.
-            except ValueError:
-                print("Plaintext must be convertible to an integer. Terminating")
-                return
+## How It Works
 
-            # Encrypt the message
-            ciphertext = bob_encrypt(plaintext, public_key)
-            print(f"Ciphertext: {ciphertext}")
-            # Send ciphertext to Alice
-            conn.sendall(str(ciphertext).encode())
+### Alice:
+- Generates two 512-bit primes `p` and `q`
+- Computes modulus `n = p * q` and totient φ(n)
+- Chooses public exponent `e = 65537`
+- Calculates private exponent `d = e⁻¹ mod φ(n)`
+- Sends `(n, e)` to Bob over TCP socket (port 5000)
+- Receives ciphertext from Bob over TCP socket (port 6000)
+- Decrypts ciphertext using private key `d`
 
-if __name__ == "__main__":
-    bob_server()
+### Bob:
+- Listens on port 5000 to receive `(n, e)` from Alice
+- Accepts user input message
+- Encrypts the message using `C = M^e mod n`
+- Sends ciphertext `C` to Alice over port 6000
+
+## 📁 Project Structure
+
+
