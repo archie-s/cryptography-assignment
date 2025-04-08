@@ -32,6 +32,8 @@ This project implements the **RSA public-key encryption algorithm** and demonstr
 - Encrypts the message using `C = M^e mod n`
 - Sends ciphertext `C` to Alice over port 6000
 
-## 📁 Project Structure
+## How to Run the Project
+
+> ⚠️ Important: Start **Bob** first before running **Alice**, or Alice will fail to connect.
 
 
